@@ -1,4 +1,4 @@
-import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {TypeDeCompte} from "./TypeDeCompte";
 import {RepartitionParDefaut} from "./RepartitionParDefaut";
 import {Transaction} from "./Transaction";
@@ -15,7 +15,8 @@ export class Compte {
     @Column({length: 3})
     devise: string;
 
-    @ManyToOne(() => TypeDeCompte, (type) => type.comptes, {nullable: false})
+    @ManyToOne(() => TypeDeCompte, (type) => type.comptes, {nullable: false, onDelete: "CASCADE"})
+    @JoinColumn({name: "type_id"})
     type: TypeDeCompte;
 
     @ManyToOne(() => RepartitionParDefaut, (repartition) => repartition.comptes, {nullable: false})

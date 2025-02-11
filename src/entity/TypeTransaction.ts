@@ -6,7 +6,7 @@ export class TypeTransaction {
     @PrimaryGeneratedColumn()
     readonly id: number;
 
-    @Column({length: 20})
+    @Column({length: 20, unique: true})
     nom: string;
 
     @OneToMany(() => Transaction, (transaction) => transaction.type)

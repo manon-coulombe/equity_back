@@ -1,4 +1,4 @@
-import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 import {Transaction} from "./Transaction";
 import {Participant} from "./Participant";
 
@@ -7,12 +7,14 @@ export class RepartitionTransaction {
     @PrimaryGeneratedColumn()
     readonly id: number;
 
-    @Column("decimal", {precision: 12, scale: 2})
+    @Column("numeric", {precision: 12, scale: 2})
     montant: number;
 
-    @ManyToOne(() => Transaction, (transaction) => transaction.repartitions, {nullable: false})
+    @ManyToOne(() => Transaction, (transaction) => transaction.repartitions, {nullable: false, onDelete: "CASCADE"})
+    @JoinColumn({ name: "transaction_id" })
     transaction: Transaction;
 
-    @ManyToOne(() => Participant, (participant) => participant.repartitions, {nullable: false})
+    @ManyToOne(() => Participant, (participant) => participant.repartitions, {nullable: false, onDelete: "CASCADE"})
+    @JoinColumn({ name: "participant_id" })
     participant: Participant;
 }

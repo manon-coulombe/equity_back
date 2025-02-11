@@ -6,7 +6,7 @@ export class TypeDeCompte {
     @PrimaryGeneratedColumn()
     readonly id: number;
 
-    @Column({length: 20})
+    @Column({length: 20, unique: true})
     nom: string;
 
     @OneToMany(() => Compte, (compte) => compte.type)
