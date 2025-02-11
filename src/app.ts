@@ -1,7 +1,6 @@
-import express from "express";
+import express, {Request, Response} from "express";
 import {PostgresDataSource} from "../app_data_source";
 import {AppRoutes} from "./routes";
-import {Request, Response} from "express";
 
 const app = express();
 app.use(express.json());
@@ -18,6 +17,6 @@ app.listen(3000, async () => {
     await PostgresDataSource.initialize().then(() => {
         console.log("Data Source has been initialized!")
     }).catch((err) => {
-            console.error("Error during Data Source initialization", err)
-        })
+        console.error("Error during Data Source initialization", err)
+    })
 })

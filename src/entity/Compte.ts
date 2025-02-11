@@ -1,26 +1,29 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {TypeDeCompte} from "./TypeDeCompte";
+import {RepartitionParDefaut} from "./RepartitionParDefaut";
+import {Transaction} from "./Transaction";
+import {Participant} from "./Participant";
 
 @Entity()
-export class Compte  {
+export class Compte {
     @PrimaryGeneratedColumn()
-    readonly id: number | undefined;
+    readonly id: number;
 
-    @Column()
+    @Column({length: 20})
     nom: string;
 
-    @Column({ name: "type_de_compte" })
-    typeDeCompte: string;
+    @Column({length: 3})
+    devise: string;
 
-    @Column({ name: "devise_code" })
-    deviseCode: string;
+    @ManyToOne(() => TypeDeCompte, (type) => type.comptes, {nullable: false})
+    type: TypeDeCompte;
 
-    @Column({ name: "total_depenses" })
-    totalDepenses: number;
+    @ManyToOne(() => RepartitionParDefaut, (repartition) => repartition.comptes, {nullable: false})
+    repartition: RepartitionParDefaut;
 
-    constructor(nom: string, typeDeCompte: string, deviseCode: string, totalDepenses: number) {
-        this.nom = nom;
-        this.typeDeCompte = typeDeCompte;
-        this.deviseCode = deviseCode;
-        this.totalDepenses = totalDepenses;
-    }
+    @OneToMany(() => Transaction, (transaction) => transaction.compte)
+    transactions: Transaction[];
+
+    @OneToMany(() => Participant, (participant) => participant.compte)
+    participants: Participant[];
 }
