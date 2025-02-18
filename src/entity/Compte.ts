@@ -15,11 +15,11 @@ export class Compte {
     @Column({length: 3})
     devise: string;
 
-    @ManyToOne(() => TypeDeCompte, (type) => type.comptes, {nullable: false, onDelete: "CASCADE"})
+    @ManyToOne(() => TypeDeCompte, (type) => type.comptes, {nullable: true, onDelete: "CASCADE"})
     @JoinColumn({name: "type_id"})
     type: TypeDeCompte;
 
-    @ManyToOne(() => RepartitionParDefaut, (repartition) => repartition.comptes, {nullable: false})
+    @ManyToOne(() => RepartitionParDefaut, (repartition) => repartition.comptes, {nullable: true})
     repartition: RepartitionParDefaut;
 
     @OneToMany(() => Transaction, (transaction) => transaction.compte)

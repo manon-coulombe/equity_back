@@ -1,8 +1,14 @@
-import {compteGetAllAction} from "./controller/compte_get_all_action";
-import {compteGetByIdAction} from "./controller/compte_get_by_id_action";
-import {comptePostAction} from "./controller/compte_post_action";
-import {compteDeleteByIdAction} from "./controller/compte_delete_by_id_action";
+import {compteGetAllAction} from "./controller/compte/CompteGetAllAction";
+import {compteGetByIdAction} from "./controller/compte/CompteGetByIdAction";
+import {comptePostAction} from "./controller/compte/ComptePostAction";
+import {compteDeleteByIdAction} from "./controller/compte/CompteDeleteByIdAction";
 import {Request, Response} from "express";
+import {transactionGetAllByCompteIdAction} from "./controller/transaction/TransactionGetAllByCompteIdAction";
+import {transactionGetByIdAction} from "./controller/transaction/TransactionGetByIdAction";
+import {transactionPostAction} from "./controller/transaction/TransactionPostAction";
+import {transactionDeleteByIdAction} from "./controller/transaction/TransactionDeleteByIdAction";
+import {transactionUpdateAction} from "./controller/transaction/TransactionUpdateAction";
+import {compteUpdateAction} from "./controller/compte/CompteUpdateAction";
 
 type HttpMethod = "get" | "post" | "put" | "delete" | "patch";
 
@@ -30,7 +36,37 @@ export const AppRoutes: Route[] = [
     },
     {
         path: "/compte/:id",
-        method: "post",
+        method: "delete",
         action: compteDeleteByIdAction,
-    }
+    },
+    {
+        path: "/compte/:id",
+        method: "patch",
+        action: compteUpdateAction,
+    },
+    {
+        path: "/compte/:id/transactions",
+        method: "get",
+        action: transactionGetAllByCompteIdAction,
+    },
+    {
+        path: "/transaction/:id",
+        method: "get",
+        action: transactionGetByIdAction,
+    },
+    {
+        path: "/transaction",
+        method: "post",
+        action: transactionPostAction,
+    },
+    {
+        path: "/transaction/:id",
+        method: "delete",
+        action: transactionDeleteByIdAction,
+    },
+    {
+        path: "/transaction/:id",
+        method: "patch",
+        action: transactionUpdateAction,
+    },
 ]
