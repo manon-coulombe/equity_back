@@ -9,6 +9,11 @@ import {transactionPostAction} from "./controller/transaction/TransactionPostAct
 import {transactionDeleteByIdAction} from "./controller/transaction/TransactionDeleteByIdAction";
 import {transactionUpdateAction} from "./controller/transaction/TransactionUpdateAction";
 import {compteUpdateAction} from "./controller/compte/CompteUpdateAction";
+import {participantsGetByCompteAction} from "./controller/participant/ParticipantGeByCompteAction";
+import {participantGetByIdAction} from "./controller/participant/ParticipantGetByIdAction";
+import {participantPostAction} from "./controller/participant/ParticipantPostAction";
+import {participantDeleteAction} from "./controller/participant/ParticipantDeleteAction";
+import {participantUpdateAction} from "./controller/participant/ParticipantUpdateAction";
 
 type HttpMethod = "get" | "post" | "put" | "delete" | "patch";
 
@@ -68,5 +73,30 @@ export const AppRoutes: Route[] = [
         path: "/transaction/:id",
         method: "patch",
         action: transactionUpdateAction,
+    },
+    {
+        path: "/compte/:id/participants",
+        method: "get",
+        action: participantsGetByCompteAction,
+    },
+    {
+        path: "/participant/:id",
+        method: "get",
+        action: participantGetByIdAction,
+    },
+    {
+        path: "/participant",
+        method: "post",
+        action: participantPostAction,
+    },
+    {
+        path: "/participant/:id",
+        method: "delete",
+        action: participantDeleteAction,
+    },
+    {
+        path: "/participant/:id",
+        method: "patch",
+        action: participantUpdateAction,
     },
 ]
