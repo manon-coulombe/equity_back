@@ -14,12 +14,12 @@ export async function comptePostAction(req: Request, res: Response) {
         compteData.nom = req.body.nom;
         compteData.devise = req.body.devise;
 
-        const type = await typeRepository.findOneBy({id: req.body.type});
+        const type = await typeRepository.findOneBy({id: parseInt(req.body.type_id)});
         if (type) {
             compteData.type = type;
         }
 
-        const repartition = await repartitionRepository.findOneBy({id: req.body.repartition});
+        const repartition = await repartitionRepository.findOneBy({id: parseInt(req.body.repartition_id)});
         if (repartition) {
             compteData.repartition = repartition;
         }

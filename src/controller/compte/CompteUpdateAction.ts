@@ -1,14 +1,16 @@
 import {PostgresDataSource} from "../../../app_data_source";
 import {Compte} from "../../entity/Compte";
 import {Request, Response} from "express";
+import {TypeDeCompte} from "../../entity/TypeDeCompte";
 
 export async function compteUpdateAction(req: Request, res: Response) {
     try {
         const compteRepository = PostgresDataSource.getRepository(Compte);
+        const typeRepository = PostgresDataSource.getRepository(TypeDeCompte);
 
-        const {nom, devise, type} = req.body;
+        const {nom, devise, type_id} = req.body;
         const existingCompte = await compteRepository.findOne({
-            where: {id: parseFloat(req.params.id)},
+            where: {id: parseInt(req.params.id)},
             relations: ['type'],
         });
 
@@ -17,8 +19,12 @@ export async function compteUpdateAction(req: Request, res: Response) {
         } else {
             if (nom != undefined) existingCompte.nom = nom;
             if (devise != undefined) existingCompte.devise = devise;
-            if (type != undefined) existingCompte.type = type;
 
+            if (type_id !== undefined) {
+                const type = await typeRepository.findOneBy({id: parseInt(type_id)});
+                type ? existingCompte.type = type
+                    : res.status(400).json({message: "Type de compte invalide"});
+            }
             const updatedCompte = await compteRepository.save(existingCompte);
 
             res.status(200).json(updatedCompte);

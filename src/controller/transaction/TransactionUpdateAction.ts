@@ -1,15 +1,23 @@
 import {PostgresDataSource} from "../../../app_data_source";
 import {Transaction} from "../../entity/Transaction";
 import {Request, Response} from "express";
+import {TypeTransaction} from "../../entity/TypeTransaction";
+import {Participant} from "../../entity/Participant";
+import {RepartitionTransaction} from "../../entity/RepartitionTransaction";
 
 export async function transactionUpdateAction(req: Request, res: Response) {
     try {
         const transactionRepository = PostgresDataSource.getRepository(Transaction);
-        const {nom, montant, devise, date, type, payeur} = req.body;
+        const typeRepository = PostgresDataSource.getRepository(TypeTransaction);
+        const participantRepository = PostgresDataSource.getRepository(Participant);
+        const repartitionRepository = PostgresDataSource.getRepository(RepartitionTransaction);
 
+        const {nom, montant, devise, date, type_id, payeur_id, repartitions} = req.body;
+
+        const transactionId = parseInt(req.params.id);
         const existingTransaction = await transactionRepository.findOne({
-            where: {id: parseInt(req.params.id)},
-            relations: ['compte', 'type', 'payeur'],
+            where: {id: transactionId},
+            relations: ['compte', 'type', 'payeur', 'repartitions'],
         });
 
         if (!existingTransaction) {
@@ -18,9 +26,39 @@ export async function transactionUpdateAction(req: Request, res: Response) {
             if (nom !== undefined) existingTransaction.nom = nom;
             if (montant !== undefined) existingTransaction.montant = montant;
             if (devise !== undefined) existingTransaction.devise = devise;
-            if (date !== undefined) existingTransaction.date = date;
-            if (type !== undefined) existingTransaction.type = type;
-            if (payeur !== undefined) existingTransaction.payeur = payeur;
+            if (date !== undefined) existingTransaction.date = new Date(date);
+
+            if (type_id !== undefined) {
+                const type = await typeRepository.findOneBy({id: type_id});
+                type ? existingTransaction.type = type
+                    : res.status(400).json({message: "Type de transaction invalide"});
+            }
+
+            if (payeur_id !== undefined) {
+                const payeur = await participantRepository.findOneBy({id: payeur_id});
+                payeur ? existingTransaction.payeur = payeur
+                    : res.status(400).json({message: "Payeur invalide"});
+            }
+
+            if (Array.isArray(repartitions)) {
+                await repartitionRepository.delete({transaction: {id: transactionId}});
+
+                const repartitionsToSave = repartitions.map(
+                    async (rep: { participant_id, montant }) => {
+                        const participant = await participantRepository.findOneBy({id: parseInt(rep.participant_id)});
+                        if (!participant) return null;
+
+                        const repartition = new RepartitionTransaction();
+                        repartition.transaction = existingTransaction;
+                        repartition.participant = participant;
+                        repartition.montant = rep.montant;
+
+                        await repartitionRepository.save(repartition);
+                    }
+                );
+
+                await Promise.all(repartitionsToSave);
+            }
 
             const updatedTransaction = await transactionRepository.save(existingTransaction);
 
