@@ -44,14 +44,14 @@ export async function transactionUpdateAction(req: Request, res: Response) {
                 await repartitionRepository.delete({transaction: {id: transactionId}});
 
                 const repartitionsToSave = repartitions.map(
-                    async (rep: { participant_id, montant }) => {
+                    async (rep: { participant_id: string, montant: string }) => {
                         const participant = await participantRepository.findOneBy({id: parseInt(rep.participant_id)});
                         if (!participant) return null;
 
                         const repartition = new RepartitionTransaction();
                         repartition.transaction = existingTransaction;
                         repartition.participant = participant;
-                        repartition.montant = rep.montant;
+                        repartition.montant = parseFloat(rep.montant);
 
                         await repartitionRepository.save(repartition);
                     }

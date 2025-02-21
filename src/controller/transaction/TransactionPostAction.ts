@@ -38,7 +38,7 @@ export async function transactionPostAction(req: Request, res: Response) {
 
         if (Array.isArray(repartitions)) {
             const repartitionsToSave = repartitions.map(
-                async (rep: { participant_id, montant }) => {
+                async (rep: { participant_id: string, montant: string }) => {
                     const participant = await participantRepository.findOneBy({id: parseInt(rep.participant_id)});
                     if (!participant) return null;
 
