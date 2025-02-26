@@ -1,11 +1,4 @@
 import {DataSource} from "typeorm";
-import {Compte} from "./src/entity/Compte";
-import {Participant} from "./src/entity/Participant";
-import {Transaction} from "./src/entity/Transaction";
-import {RepartitionParDefaut} from "./src/entity/RepartitionParDefaut";
-import {RepartitionTransaction} from "./src/entity/RepartitionTransaction";
-import {TypeTransaction} from "./src/entity/TypeTransaction";
-import {TypeDeCompte} from "./src/entity/TypeDeCompte";
 import "dotenv/config";
 
 export const PostgresDataSource = new DataSource({
@@ -17,7 +10,7 @@ export const PostgresDataSource = new DataSource({
     database: process.env.DATABASE,
     synchronize: true,
     logging: false,
-    entities: [Compte, Transaction, Participant, RepartitionParDefaut, RepartitionTransaction, TypeTransaction, TypeDeCompte],
+    entities: ["./src/entity/*"],
     migrations: [],
     subscribers: [],
     extra: {
