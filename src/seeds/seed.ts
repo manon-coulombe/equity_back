@@ -1,7 +1,7 @@
-import {PostgresDataSource} from "../app_data_source";
-import {TypeDeCompte} from "./entity/TypeDeCompte";
-import {TypeTransaction} from "./entity/TypeTransaction";
-import {RepartitionParDefaut} from "./entity/RepartitionParDefaut";
+import {PostgresDataSource} from "../../app_data_source";
+import {TypeDeCompte} from "../entity/TypeDeCompte";
+import {TypeTransaction} from "../entity/TypeTransaction";
+import {RepartitionParDefaut} from "../entity/RepartitionParDefaut";
 
 const seedDatabase = async () => {
     await PostgresDataSource.initialize();
