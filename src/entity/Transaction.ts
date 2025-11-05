@@ -3,6 +3,12 @@ import {Compte} from "./Compte";
 import {TypeTransaction} from "./TypeTransaction";
 import {Participant} from "./Participant";
 import {RepartitionTransaction} from "./RepartitionTransaction";
+import { ValueTransformer } from "typeorm";
+
+export const NumericTransformer: ValueTransformer = {
+    to: (value: number) => value,
+    from: (value: string | null) => (value ? parseFloat(value) : null)
+};
 
 @Entity()
 export class Transaction {
@@ -12,7 +18,7 @@ export class Transaction {
     @Column({length: 20})
     nom: string;
 
-    @Column("numeric", {precision: 12, scale: 2})
+    @Column("numeric", {precision: 12, scale: 2, transformer: NumericTransformer})
     montant: number;
 
     @Column({length: 3})

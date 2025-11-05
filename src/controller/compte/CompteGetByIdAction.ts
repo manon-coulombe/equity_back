@@ -15,18 +15,45 @@ export async function compteGetByIdAction(req: Request, res: Response) {
             relations: ['type', 'repartition', 'transactions', 'participants', 'transactions.type', 'transactions.payeur', "transactions.repartitions", "transactions.repartitions.participant"],
         });
 
-        if (compte == null) res.status(404).json({message: "Compte not found"});
+        if (!compte) {
+            res.status(404).json({message: "Compte not found"});
+        } else {
+            const compteDevise = compte.devise;
+            const transactions = await transactionRepository.find({where: {compte: {id: compteId}}});
 
-        const totalMontant = await transactionRepository
-            .createQueryBuilder("transaction")
-            .select("SUM(transaction.montant)", "total")
-            .where("transaction.compte_id = :compteId", {compteId})
-            .getRawOne();
+            let totalMontant = 0;
 
-        res.status(200).json({
-            ...compte,
-            totalMontant: totalMontant.total ? totalMontant.total : 0
-        });
+
+            for (const transaction of transactions) {
+                let montantConverti = transaction.montant;
+
+                // if (transaction.devise !== compteDevise) {
+                //
+                //     try {
+                //         // console.log(`transaction.devise ${transaction.devise}`);
+                //         // console.log(`compteDevise ${compteDevise}`);
+                //         // console.log(`transaction.montant ${transaction.montant}`);
+                //
+                //         montantConverti = await currencyConverter
+                //             .from(transaction.devise)
+                //             .to(compteDevise)
+                //             .convert();
+                //         // console.log(`montantConverti ${montantConverti}`);
+                //
+                //     } catch (conversionError) {
+                //         console.error(`Erreur de conversion ${transaction.devise} -> ${compteDevise}`, conversionError);
+                //         continue;
+                //     }
+                // }
+                totalMontant += montantConverti;
+            }
+
+            res.status(200).json({
+                ...compte,
+                totalMontant
+            });
+        }
+
     } catch (error) {
         console.error("Error fetching compte", error);
         res.status(500).json({message: "Error fetching compte", error});

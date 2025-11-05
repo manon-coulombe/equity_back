@@ -13,9 +13,7 @@ export const PostgresDataSource = new DataSource({
     entities: ["./src/entity/*"],
     migrations: [],
     subscribers: [],
-    extra: {
-        ssl: {
-            rejectUnauthorized: false
-        }
+    extra: process.env.HOST === "localhost" ? {} : {
+        ssl: { rejectUnauthorized: false }
     }
 });
