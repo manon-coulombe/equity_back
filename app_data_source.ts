@@ -10,7 +10,10 @@ export const PostgresDataSource = new DataSource({
     database: process.env.DATABASE,
     synchronize: true,
     logging: false,
-    entities: ["./src/entity/*"],
+    entities: [
+        "src/entity/**/*.ts",
+        "dist/entity/**/*.js",
+    ],
     migrations: [],
     subscribers: [],
     extra: process.env.HOST === "localhost" ? {} : {
