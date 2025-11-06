@@ -1,5 +1,6 @@
-import {DataSource} from "typeorm";
-import "dotenv/config";
+import { DataSource } from "typeorm";
+
+const isCompiled = __dirname.includes("dist");
 
 export const PostgresDataSource = new DataSource({
     type: "postgres",
@@ -11,8 +12,9 @@ export const PostgresDataSource = new DataSource({
     synchronize: true,
     logging: false,
     entities: [
-        "src/entity/**/*.ts",
-        "dist/entity/**/*.js",
+        isCompiled
+            ? "dist/src/entity/**/*.js"
+            : "src/entity/**/*.ts"
     ],
     migrations: [],
     subscribers: [],

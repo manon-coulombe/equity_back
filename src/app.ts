@@ -1,6 +1,10 @@
+import dotenv from 'dotenv'
+
+dotenv.config();
+
 import express, {Request, Response} from "express";
-import {PostgresDataSource} from "../app_data_source";
 import {AppRoutes} from "./routes";
+import {PostgresDataSource} from "../app_data_source";
 
 const app = express();
 app.use(express.json());
