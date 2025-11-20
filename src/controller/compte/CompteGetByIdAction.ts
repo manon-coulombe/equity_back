@@ -18,39 +18,37 @@ export async function compteGetByIdAction(req: Request, res: Response) {
         if (!compte) {
             res.status(404).json({message: "Compte not found"});
         } else {
-            const compteDevise = compte.devise;
             const transactions = await transactionRepository.find({where: {compte: {id: compteId}}});
-
             let totalMontant = 0;
-
 
             for (const transaction of transactions) {
                 let montantConverti = transaction.montant;
-
-                // if (transaction.devise !== compteDevise) {
-                //
-                //     try {
-                //         // console.log(`transaction.devise ${transaction.devise}`);
-                //         // console.log(`compteDevise ${compteDevise}`);
-                //         // console.log(`transaction.montant ${transaction.montant}`);
-                //
-                //         montantConverti = await currencyConverter
-                //             .from(transaction.devise)
-                //             .to(compteDevise)
-                //             .convert();
-                //         // console.log(`montantConverti ${montantConverti}`);
-                //
-                //     } catch (conversionError) {
-                //         console.error(`Erreur de conversion ${transaction.devise} -> ${compteDevise}`, conversionError);
-                //         continue;
-                //     }
-                // }
                 totalMontant += montantConverti;
             }
 
+            const participantsBalance: Record<number, number> = {};
+
+            for (const participant of compte.participants) {
+                participantsBalance[participant.id] = 0;
+            }
+
+            for (const transaction of compte.transactions) {
+                participantsBalance[transaction.payeur.id] += transaction.montant;
+
+                for (const rep of transaction.repartitions) {
+                    participantsBalance[rep.participant.id] -= rep.montant;
+                }
+            }
+
+            const balance = compte.participants.map(p => ({
+                participant: p.nom,
+                solde: participantsBalance[p.id]
+            }));
+
             res.status(200).json({
                 ...compte,
-                totalMontant
+                totalMontant,
+                balance: balance
             });
         }
 
