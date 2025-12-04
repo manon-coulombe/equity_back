@@ -15,6 +15,8 @@ export async function comptePostAction(req: Request, res: Response) {
         const compteData = new Compte();
         compteData.nom = req.body.nom;
         compteData.devise = req.body.devise;
+        // @ts-ignore
+        compteData.firebaseUid = req.user.uid;
 
         const type = await typeRepository.findOneBy({id: parseInt(req.body.type_id)});
         if (type) {

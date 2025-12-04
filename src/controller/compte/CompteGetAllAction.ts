@@ -6,6 +6,8 @@ export async function compteGetAllAction(req: Request, res: Response) {
     try {
         const compteRepository = PostgresDataSource.getRepository(Compte);
         const comptes = await compteRepository.find({
+            // @ts-ignore
+            where: {firebaseUid: req.user.uid},
             relations: ['participants'],
         });
 

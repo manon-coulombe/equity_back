@@ -2,15 +2,22 @@ import dotenv from 'dotenv'
 
 dotenv.config();
 
-import express, {Request, Response} from "express";
+import express, {Request, RequestHandler, Response} from "express";
 import {AppRoutes} from "./routes";
 import {PostgresDataSource} from "../app_data_source";
+import {verifyFirebaseToken} from "./middlewares/auth";
 
 const app = express();
 app.use(express.json());
 
 AppRoutes.forEach(route => {
-    app[route.method](route.path, (req: Request, res: Response, next: Function) => {
+    const middlewares: RequestHandler[] = [];
+
+    if (route.auth) {
+        middlewares.push(verifyFirebaseToken);
+    }
+
+    app[route.method](route.path, ...middlewares, (req: Request, res: Response, next: Function) => {
         route.action(req, res).then(() => next).catch(err => next(err));
     })
 })

@@ -2,3 +2,4 @@ node_modules/*
 package-lock.json
 .env
 dist
+equity-6d8c4-firebase-adminsdk-fbsvc-3e22a61c15.json
