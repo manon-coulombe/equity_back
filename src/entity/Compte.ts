@@ -9,7 +9,7 @@ export class Compte {
     @PrimaryGeneratedColumn()
     readonly id: number;
 
-    @Column({ name: "firebase_uid", length: 100 })
+    @Column({ name: "firebase_uid", length: 100, default: '' })
     firebaseUid: string;
 
     @Column({length: 20})

@@ -1,5 +1,5 @@
 import {NextFunction, Request, RequestHandler, Response} from "express";
-import admin from "firebase-admin";
+import admin from "../firebase";
 
 export const verifyFirebaseToken: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -17,6 +17,7 @@ export const verifyFirebaseToken: RequestHandler = async (req: Request, res: Res
         req.user = { uid: decoded.uid };
         next();
     } catch (err) {
+        console.log(err)
         res.status(403).json({ error: "Invalid token" });
         return;
     }
