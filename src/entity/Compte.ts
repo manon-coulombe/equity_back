@@ -1,4 +1,4 @@
-import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {TypeDeCompte} from "./TypeDeCompte";
 import {RepartitionParDefaut} from "./RepartitionParDefaut";
 import {Transaction} from "./Transaction";
@@ -8,6 +8,9 @@ import {Participant} from "./Participant";
 export class Compte {
     @PrimaryGeneratedColumn()
     readonly id: number;
+
+    @CreateDateColumn({ name: 'created_at' })
+    createdAt: Date;
 
     @Column({ name: "firebase_uid", length: 100, default: '' })
     firebaseUid: string;
@@ -19,6 +22,7 @@ export class Compte {
     devise: string;
 
     @ManyToOne(() => TypeDeCompte, (type) => type.comptes, {nullable: true, onDelete: "CASCADE"})
+
     @JoinColumn({name: "type_id"})
     type: TypeDeCompte;
 

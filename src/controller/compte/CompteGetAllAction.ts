@@ -11,7 +11,7 @@ export async function compteGetAllAction(req: Request, res: Response) {
             relations: ['participants'],
         });
 
-        res.status(200).json(comptes.filter((compte) => compte.participants.length > 0));
+        res.status(200).json(comptes.filter((compte: Compte) => compte.participants.length > 0));
     } catch (error) {
         console.error("Error fetching accounts", error);
         res.status(500).json({ message: "Error fetching accounts" });
