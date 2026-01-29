@@ -5,6 +5,7 @@ import {RepartitionTransaction} from "../../entity/RepartitionTransaction";
 import {Compte} from "../../entity/Compte";
 import {TypeTransaction} from "../../entity/TypeTransaction";
 import {Participant} from "../../entity/Participant";
+import {CurrencyService} from "../../services/CurrencyService";
 
 export async function transactionPostAction(req: Request, res: Response) {
     try {
@@ -14,7 +15,7 @@ export async function transactionPostAction(req: Request, res: Response) {
         const participantRepository = PostgresDataSource.getRepository(Participant);
         const repartitionRepository = PostgresDataSource.getRepository(RepartitionTransaction);
 
-        const {compte_id, type_id, payeur_id, repartitions} = req.body;
+        const {compte_id, type_id, payeur_id, repartitions, devise, montant} = req.body;
 
         const compte: Compte | null = await compteRepository.findOneBy({id: compte_id});
         if (!compte) res.status(400).json({message: "Compte introuvable"});
@@ -25,10 +26,17 @@ export async function transactionPostAction(req: Request, res: Response) {
         const payeur: Participant | null = await participantRepository.findOneBy({id: payeur_id});
         if (!payeur) res.status(400).json({message: "Payeur introuvable"});
 
+        let taux = 1;
+
+        if (devise !== compte!.devise) {
+            taux = await CurrencyService.getRate(devise, compte!.devise,);
+        }
+
         const transaction = new Transaction();
         transaction.nom = req.body.nom;
-        transaction.montant = req.body.montant;
-        transaction.devise = req.body.devise;
+        transaction.montant = montant;
+        transaction.montantConverti = montant * taux;
+        transaction.devise = devise;
         transaction.date = new Date(req.body.date);
         transaction.compte = compte!;
         transaction.type = type!;
@@ -42,10 +50,13 @@ export async function transactionPostAction(req: Request, res: Response) {
                     const participant = await participantRepository.findOneBy({id: parseInt(rep.participant_id)});
                     if (!participant) return null;
 
+                    const montant = parseFloat(rep.montant);
+
                     const repartition = new RepartitionTransaction();
                     repartition.transaction = savedTransaction;
                     repartition.participant = participant;
-                    repartition.montant = parseFloat(rep.montant);
+                    repartition.montant = montant;
+                    repartition.montantConverti = montant * taux;
 
                     return repartitionRepository.save(repartition);
                 }

@@ -21,6 +21,9 @@ export class Transaction {
     @Column("numeric", {precision: 12, scale: 2, transformer: NumericTransformer})
     montant: number;
 
+    @Column("numeric", { precision: 12, scale: 2, transformer: NumericTransformer, nullable: true })
+    montantConverti: number;
+
     @Column({length: 3})
     devise: string;
 

@@ -2,7 +2,6 @@ import {PostgresDataSource} from "../../../app_data_source";
 import {Compte} from "../../entity/Compte";
 import {Request, Response} from "express";
 import {Transaction} from "../../entity/Transaction";
-import {CurrencyService} from "../../services/CurrencyService";
 
 export async function compteGetByIdAction(req: Request, res: Response) {
     try {
@@ -23,16 +22,7 @@ export async function compteGetByIdAction(req: Request, res: Response) {
             let totalMontant = 0;
 
             for (const transaction of transactions) {
-                let montantConverti = transaction.montant;
-
-                if (transaction.devise !== compte.devise) {
-                    montantConverti = await CurrencyService.convert(
-                        transaction.montant,
-                        transaction.devise,
-                        compte.devise,
-                    );
-                }
-                totalMontant += montantConverti;
+                totalMontant += transaction.montantConverti;
             }
 
             const participantsBalance: Record<number, number> = {};
@@ -42,10 +32,10 @@ export async function compteGetByIdAction(req: Request, res: Response) {
             }
 
             for (const transaction of compte.transactions) {
-                participantsBalance[transaction.payeur.id] += transaction.montant;
+                participantsBalance[transaction.payeur.id] += transaction.montantConverti;
 
-                for (const rep of transaction.repartitions) {
-                    participantsBalance[rep.participant.id] -= rep.montant;
+                for (const repartition of transaction.repartitions) {
+                    participantsBalance[repartition.participant.id] -= repartition.montantConverti;
                 }
             }
 

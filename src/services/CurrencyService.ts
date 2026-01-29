@@ -4,12 +4,11 @@ export class CurrencyService {
     private static API_URL = "https://v6.exchangerate-api.com/v6/";
     private static API_KEY = process.env.EXCHANGE_API_KEY!;
 
-    static async convert(
-        amount: number,
+    static async getRate(
         from: string,
         to: string,
     ): Promise<number> {
-        if (from === to) return amount;
+        if (from === to) return 1;
 
         const options = {
             method: 'GET',
@@ -27,6 +26,6 @@ export class CurrencyService {
             throw new Error(`Rate not found for ${to}`);
         }
 
-        return amount * rate;
+        return rate;
     }
 }
